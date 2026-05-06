@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import { setupDownloader } from './services/downloader.js'
 import { setupMedia } from './services/media.js'
 import { setupDb } from './services/db.js'
+import { setupUpdater } from './services/updater.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -46,6 +47,11 @@ dbInstance = setupDb(ipcMain)
 
 app.whenReady().then(() => {
   createWindow()
+
+  // Only check for updates in production build
+  if (!isDev) {
+    setupUpdater()
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
