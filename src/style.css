@@ -1,9 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Viga&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
-  --color-primary: #aa3bff;
-  --color-primary-light: rgba(170, 59, 255, 0.1);
+  --font-viga: "Viga", sans-serif;
+  --color-primary: #ef7d0a;
+  --color-primary-light: rgba(239, 125, 10, 0.1);
+  
+  --color-purple-400: #f59e42; /* Map original purples to oranges so existing classes translate */
+  --color-purple-500: #f97316;
+  --color-purple-600: #ea580c;
+  --color-pink-500: #ea580c;
+  --color-pink-600: #c2410c;
+
+  /* Remap slate colors to neutral grey globally */
+  --color-slate-50: var(--color-neutral-50);
+  --color-slate-100: var(--color-neutral-100);
+  --color-slate-200: var(--color-neutral-200);
+  --color-slate-300: var(--color-neutral-300);
+  --color-slate-400: var(--color-neutral-400);
+  --color-slate-500: var(--color-neutral-500);
+  --color-slate-600: var(--color-neutral-600);
+  --color-slate-700: var(--color-neutral-700);
+  --color-slate-800: var(--color-neutral-800);
+  --color-slate-900: var(--color-neutral-900);
+  --color-slate-950: var(--color-neutral-950);
 }
 
 body {

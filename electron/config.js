@@ -13,7 +13,13 @@ import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 const getBinPath = (binName) => {
   const binaryName = process.platform === 'win32' ? `${binName}.exe` : binName;
   if (binName === 'ffmpeg') {
-    return ffmpegInstaller.path;
+    let ffmpegPath = ffmpegInstaller.path;
+    if (app.isPackaged) {
+      // ffmpegInstaller.path inside an ASAR returns the virtual path.
+      // We must point yt-dlp to the real, unpacked binary on disk.
+      ffmpegPath = ffmpegPath.replace('app.asar', 'app.asar.unpacked');
+    }
+    return ffmpegPath;
   }
   if (!app.isPackaged) {
     return path.join(app.getAppPath(), 'assets', 'bin', binaryName);

@@ -1,4 +1,5 @@
-import { autoUpdater } from 'electron-updater';
+import electronUpdater from 'electron-updater';
+const { autoUpdater } = electronUpdater;
 import { dialog } from 'electron';
 
 export function setupUpdater() {

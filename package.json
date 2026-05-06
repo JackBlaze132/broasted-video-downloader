@@ -38,6 +38,7 @@
   "build": {
     "appId": "com.broasted.app",
     "productName": "Broasted",
+    "icon": "src/assets/logo/broasted_logo.png",
     "directories": {
       "output": "dist-electron"
     },
@@ -45,6 +46,9 @@
       "dist/**/*",
       "electron/**/*",
       "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/@ffmpeg-installer/**/*"
     ],
     "extraResources": [
       {
@@ -61,6 +65,7 @@
       "repo": "broasted-video-downloader"
     },
     "mac": {
+      "icon": "src/assets/logo/mac_broasted_logo.png",
       "target": [
         "dmg",
         "zip"

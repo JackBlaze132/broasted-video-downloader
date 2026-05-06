@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { DownloadCloud, PlayCircle, Settings2, FolderDown, ChevronDown, Info } from 'lucide-vue-next'
+import { DownloadCloud, PlayCircle, Settings2, FolderDown, ChevronDown, Info, ClipboardPaste, Copy } from 'lucide-vue-next'
 import { useSaveFolder } from '../composables/useSaveFolder.js'
 import { useToast } from '../composables/useToast.js'
 
@@ -14,7 +14,51 @@ const progress = ref(0)
 const expertMode = ref(false)
 const expertArgs = ref('')
 
+const showContextMenu = ref(false)
+const contextMenuPos = ref({ x: 0, y: 0 })
+
+const handleInputClick = (event) => {
+  if (url.value) event.target.select()
+}
+
+const pasteUrl = async () => {
+  try {
+    showContextMenu.value = false
+    const text = await navigator.clipboard.readText()
+    if (text) url.value = text
+  } catch (err) {
+    notify('Failed to access clipboard', 'error')
+  }
+}
+
+const copyUrl = async () => {
+  try {
+    showContextMenu.value = false
+    await navigator.clipboard.writeText(url.value)
+    notify('Copied to clipboard!', 'success')
+  } catch (err) {
+    notify('Failed to copy', 'error')
+  }
+}
+
+const pasteAndDownload = async () => {
+  await pasteUrl()
+  if (url.value) {
+    startDownload()
+  }
+}
+
+const handleContextMenu = (e) => {
+  contextMenuPos.value = { x: e.clientX, y: e.clientY }
+  showContextMenu.value = true
+}
+
+const closeContextMenu = () => {
+  showContextMenu.value = false
+}
+
 onMounted(() => {
+  document.addEventListener('click', closeContextMenu)
   if (window.electronAPI) {
     window.electronAPI.onDownloadProgress((value) => {
       progress.value = value
@@ -24,6 +68,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  document.removeEventListener('click', closeContextMenu)
   if (window.electronAPI) window.electronAPI.removeDownloadListeners()
 })
 
@@ -98,20 +143,63 @@ const startDownload = async () => {
               </div>
               <input
                 v-model="url"
+                @click="handleInputClick"
+                @contextmenu.prevent="handleContextMenu"
                 type="text"
                 placeholder="https://youtube.com/watch?v=..."
                 class="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-slate-600"
               >
             </div>
+            
+            <button
+              @click="pasteUrl"
+              title="Paste from clipboard"
+              class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 p-4 rounded-xl transition-colors flex items-center justify-center shrink-0"
+            >
+              <ClipboardPaste class="w-5 h-5" />
+            </button>
+            
             <button
               @click="startDownload"
               :disabled="isDownloading || !url"
-              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium py-4 px-8 rounded-xl transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium py-4 px-8 rounded-xl transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
             >
               <FolderDown class="w-5 h-5" />
-              {{ isDownloading ? 'Downloading...' : 'Fetch Media' }}
+              {{ isDownloading ? 'Downloading...' : 'Download' }}
             </button>
           </div>
+          
+          <!-- Custom Context Menu -->
+          <Teleport to="body">
+            <div 
+              v-if="showContextMenu"
+              class="fixed z-[100] bg-slate-800 border border-slate-700 shadow-xl rounded-lg py-1 w-48"
+              :style="{ top: contextMenuPos.y + 'px', left: contextMenuPos.x + 'px' }"
+            >
+              <button 
+                @click.stop="copyUrl" 
+                class="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 hover:text-white flex items-center gap-3"
+              >
+                <Copy class="w-4 h-4 text-slate-400" />
+                Copy
+              </button>
+              <button 
+                @click.stop="pasteUrl" 
+                class="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 hover:text-white flex items-center gap-3"
+              >
+                <ClipboardPaste class="w-4 h-4 text-slate-400" />
+                Paste
+              </button>
+              <div class="h-px bg-slate-700 my-1"></div>
+              <button 
+                @click.stop="pasteAndDownload" 
+                class="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 hover:text-white flex items-center gap-3"
+              >
+                <FolderDown class="w-4 h-4 text-purple-400" />
+                Paste and Download
+              </button>
+            </div>
+          </Teleport>
         </div>
 
         <!-- Settings Bar -->

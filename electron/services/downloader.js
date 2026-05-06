@@ -12,10 +12,22 @@ import { existsSync, mkdirSync } from 'fs'
 const QUALITY_PRESETS = {
   mp3:   { extractAudio: true, audioFormat: 'mp3' },
   flac:  { extractAudio: true, audioFormat: 'flac' },
-  '4k':  { format: 'bestvideo[height<=2160]+bestaudio/best' },
-  '1080p': { format: 'bestvideo[height<=1080]+bestaudio/best' },
-  '720p':  { format: 'bestvideo[height<=720]+bestaudio/best' },
-  best:  { format: 'best' },
+  '4k':  { 
+    format: 'bestvideo[height<=2160][vcodec^=hev]+bestaudio[ext=m4a]/bestvideo[height<=2160]+bestaudio/best',
+    mergeOutputFormat: 'mp4'
+  },
+  '1080p': { 
+    format: 'bestvideo[height<=1080][vcodec^=avc]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best',
+    mergeOutputFormat: 'mp4'
+  },
+  '720p':  { 
+    format: 'bestvideo[height<=720][vcodec^=avc]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best',
+    mergeOutputFormat: 'mp4'
+  },
+  best:  { 
+    format: 'bestvideo[vcodec^=avc]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best',
+    mergeOutputFormat: 'mp4'
+  },
 }
 
 export const setupDownloader = (ipcMain) => {
@@ -43,8 +55,8 @@ export const setupDownloader = (ipcMain) => {
     let args = {
       noCheckCertificates: true,
       noWarnings: true,
-      preferFreeFormats: true,
       ffmpegLocation: binPaths.ffmpeg,
+      keepVideo: false,
       addHeader: [
         'referer:youtube.com',
         'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
