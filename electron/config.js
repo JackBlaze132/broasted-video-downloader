@@ -8,15 +8,20 @@ import path from 'path'
  * @param {string} binName - Binary name without extension (e.g. 'yt-dlp')
  * @returns {string} Absolute path to the binary
  */
+import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
+
 const getBinPath = (binName) => {
-  const binaryName = process.platform === 'win32' ? `${binName}.exe` : binName
-  if (!app.isPackaged) {
-    return path.join(app.getAppPath(), 'assets', 'bin', binaryName)
+  const binaryName = process.platform === 'win32' ? `${binName}.exe` : binName;
+  if (binName === 'ffmpeg') {
+    return ffmpegInstaller.path;
   }
-  return path.join(process.resourcesPath, 'assets', 'bin', binaryName)
-}
+  if (!app.isPackaged) {
+    return path.join(app.getAppPath(), 'assets', 'bin', binaryName);
+  }
+  return path.join(process.resourcesPath, 'assets', 'bin', binaryName);
+};
 
 export const binPaths = {
   ytdlp: getBinPath('yt-dlp'),
   ffmpeg: getBinPath('ffmpeg'),
-}
+};
