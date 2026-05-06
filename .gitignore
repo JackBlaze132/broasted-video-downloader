@@ -43,3 +43,4 @@ out/
 # Database files (local SQLite, never commit user data)
 *.sqlite
 *.db
+assets/bin/ffmpeg.exe
