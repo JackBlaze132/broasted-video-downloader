@@ -1,10 +1,10 @@
 name: Build Apps
 
 on:
-  workflow_dispatch: # Allows you to run the build manually from the GitHub website
+  workflow_dispatch:
   push:
     tags:
-      - 'v*' # Automatically triggers when you push a version tag (e.g., git tag v1.0.2 && git push --tags)
+      - 'v*'
 
 permissions:
   contents: write # Crucial: Allows the action to upload files to GitHub Releases automatically
