@@ -57,6 +57,8 @@ export const setupDownloader = (ipcMain) => {
       noWarnings: true,
       ffmpegLocation: binPaths.ffmpeg,
       keepVideo: false,
+      windowsFilenames: true,
+      trimFilenames: 150,
       addHeader: [
         'referer:youtube.com',
         'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',

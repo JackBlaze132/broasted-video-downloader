@@ -62,7 +62,8 @@ onMounted(() => {
   if (window.electronAPI) {
     window.electronAPI.onDownloadProgress((value) => {
       progress.value = value
-      if (progress.value >= 100) isDownloading.value = false
+      // Do not set isDownloading to false here, because the backend is still merging using ffmpeg.
+      // it will be set to false below when downloadStart() promise dynamically resolves!
     })
   }
 })
@@ -264,12 +265,17 @@ const startDownload = async () => {
         <!-- Progress -->
         <div v-if="isDownloading || progress === 100" class="pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div class="flex justify-between text-sm mb-2">
-            <span class="text-slate-400">{{ progress === 100 ? 'Download Complete!' : 'Downloading chunks...' }}</span>
+            <span class="text-slate-400">
+              <template v-if="!isDownloading && progress === 100">Download Complete!</template>
+              <template v-else-if="isDownloading && progress === 100">Processing & Merging...</template>
+              <template v-else>Downloading Media...</template>
+            </span>
             <span class="text-purple-400 font-mono font-medium">{{ progress }}%</span>
           </div>
           <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
             <div
               class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300 relative"
+              :class="{'animate-pulse': isDownloading && progress === 100}"
               :style="{ width: `${progress}%` }"
             >
               <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
