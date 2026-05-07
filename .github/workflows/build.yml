@@ -1,0 +1,51 @@
+name: Build Apps
+
+on:
+  workflow_dispatch: # Allows you to run the build manually from the GitHub website
+  push:
+    tags:
+      - 'v*' # Automatically triggers when you push a version tag (e.g., git tag v1.0.2 && git push --tags)
+
+permissions:
+  contents: write # Crucial: Allows the action to upload files to GitHub Releases automatically
+
+jobs:
+  release:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Vue App
+        run: npm run build
+
+      - name: Build & Publish Windows (.exe)
+        if: matrix.os == 'windows-latest'
+        run: npx electron-builder --win --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Publish Linux (.AppImage)
+        if: matrix.os == 'ubuntu-latest'
+        run: npx electron-builder --linux --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Publish Mac (.dmg)
+        if: matrix.os == 'macos-latest'
+        run: npx electron-builder --mac --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

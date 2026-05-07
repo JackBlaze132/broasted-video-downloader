@@ -67,8 +67,7 @@
     "mac": {
       "icon": "src/assets/logo/mac_broasted_logo.png",
       "target": [
-        "dmg",
-        "zip"
+        "dmg"
       ]
     },
     "win": {
