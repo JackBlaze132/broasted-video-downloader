@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🍗 Broasted
+<img src="./src/assets/logo/broasted_logo_long.svg" alt="Broasted Logo" width="400">
 
 **A powerful, cross-platform desktop application for downloading, compressing, and processing media.**
 
